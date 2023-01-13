@@ -1,0 +1,42 @@
+version: '3.7'
+#어떤 v
+
+services:
+  postgres-container:
+    container_name: db
+    image: postgres:13.3
+    # 요기도
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: 'boardtestUSER'
+      POSTGRES_PASSWORD: '123456'
+    # 요기도
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    restart: always
+    # 요기도
+    networks:
+      - test-networks
+
+  pensive_jackson:
+    container_name: server
+    # image: boardtest
+    build:
+      context: .
+      dockerfile: dockerfile
+    # 요기도
+    volumes:
+      - .:/usr/src/boardtest
+    ports:
+      - 3001:3001
+    restart: always
+    # 요기도
+    command: yarn start:debug
+    networks:
+      - test-networks
+
+networks:
+  # 요기도
+  test-networks:
+    driver: bridge

@@ -4,20 +4,26 @@ import {
   Delete,
   Get,
   HttpException,
+  Inject,
   Param,
   ParseArrayPipe,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UpdateDateColumn } from 'typeorm';
-import { NoticeBoardDTO, UpdateNoticeBoardDTO } from './noticeboard.dto';
+import { CreateNoticeDto } from './dtos/create-notice.dto';
+import { UpdateBoardDTO } from './dtos/update-notice.dto';
 import { NoticeboardService } from './noticeboard.service';
 
 @Controller('noticeboard')
 export class NoticeboardController {
-  constructor(private readonly NoticeboardService: NoticeboardService) {}
+  constructor(
+    @Inject('test')
+    private readonly NoticeboardService: NoticeboardService,
+  ) {}
 
   // @Get()
   // findAll(): string {
@@ -30,7 +36,7 @@ export class NoticeboardController {
   // }
 
   @Post('test')
-  async create(@Body() NoticeBoardDTO: NoticeBoardDTO) {
+  async create(@Body() NoticeBoardDTO: CreateNoticeDto) {
     return 'This action adds a new noticeboard';
   }
 
@@ -38,12 +44,21 @@ export class NoticeboardController {
   /**
    * 게시글 생성 요청입니다.
    */
-  async createBoard(@Body() NoticeBoardDTO: NoticeBoardDTO) {
+  async createBoard(
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    )
+    NoticeBoardDTO: CreateNoticeDto,
+  ) {
     // return await this.NoticeboardService.createBoard(
     //   NoticeBoardDTO.title,
     //   NoticeBoardDTO.content,
     // );
-    return this.NoticeboardService.createNotice(NoticeBoardDTO);
+    console.log(NoticeBoardDTO);
+    return this.NoticeboardService.createNotice(NoticeBoardDTO as any);
   }
 
   @Get('find')
@@ -57,6 +72,7 @@ export class NoticeboardController {
 
   @Get()
   async detailBoard(@Query('board', ParseIntPipe) id: number) {
+    console.log(id);
     return this.NoticeboardService.detailNotice(id);
   }
 
@@ -77,7 +93,16 @@ export class NoticeboardController {
   /**
    * 게시글 수정 요청입니다.
    */
-  async updateBoard(@Query('id') id, @Body() body: UpdateNoticeBoardDTO) {
+  async updateBoard(
+    @Query('id') id,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    )
+    body: UpdateBoardDTO,
+  ) {
     /**
      * Restful 에서 리소스를 식별하는 변수는 QueryString, Param
      */

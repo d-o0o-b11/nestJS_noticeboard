@@ -26,8 +26,6 @@ export class NoticeBoardEntity {
   @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
 
-  sort: 'ASC';
-
   //조회수
   @Column('int', { default: 0 })
   view: number;

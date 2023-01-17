@@ -2,7 +2,8 @@ import { Injectable, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { commentEntity } from 'src/domain/comment';
 import { Repository } from 'typeorm';
-import { commentDTO, UpdateCommentDTO } from './comment.dto';
+import { CreateCommentDto } from './dtos/create-comment.dto';
+import { UpdateCommentDto } from './dtos/update-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -15,11 +16,10 @@ export class CommentService {
    *
    * 댓글 작성 post
    */
-  async createComment(noticeId: number, data: commentDTO) {
+  async createComment(noticeId: number, data: CreateCommentDto) {
     const entity: commentEntity = new commentEntity();
     entity.board_id = noticeId;
     entity.content = data.content;
-    entity.date = data.date;
 
     return this.repository.save(entity);
   }
@@ -27,7 +27,7 @@ export class CommentService {
   /**
    * 댓글 수정 patch
    */
-  async updateComment(id: number, data: UpdateCommentDTO) {
+  async updateComment(id: number, data: UpdateCommentDto) {
     return this.repository.update(id, data);
   }
 

@@ -10,6 +10,11 @@ import { NoticeboardService } from './noticeboard.service';
    */
   imports: [TypeOrmModule.forFeature([NoticeBoardEntity])],
   controllers: [NoticeboardController],
-  providers: [NoticeboardService],
+  providers: [
+    {
+      provide: 'test',
+      useClass: NoticeboardService,
+    },
+  ],
 })
 export class NoticeboardModule {}

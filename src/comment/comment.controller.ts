@@ -4,13 +4,16 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
-import { threadId } from 'worker_threads';
-import { commentDTO, UpdateCommentDTO } from './comment.dto';
+
 import { CommentService } from './comment.service';
+import { CreateCommentDto } from './dtos/create-comment.dto';
+import { UpdateCommentDto } from './dtos/update-comment.dto';
 
 @Controller('comment')
 export class CommentController {
@@ -18,21 +21,33 @@ export class CommentController {
 
   @Post(':id')
   async createComment(
-    @Param('id') noticeId: number,
-    @Body() commentDTO: commentDTO,
+    @Param('id', ParseIntPipe) noticeId: number,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    )
+    CreateCommentDto: CreateCommentDto,
   ) {
-    return this.CommentService.createComment(noticeId, commentDTO);
+    return this.CommentService.createComment(noticeId, CreateCommentDto);
   }
 
   @Delete()
-  async deleteComment(@Query('comment') id: number) {
+  async deleteComment(@Query('comment', ParseIntPipe) id: number) {
     return this.CommentService.deleteComment(id);
   }
 
   @Patch()
   async updateComment(
-    @Query('comment') id: number,
-    @Body() data: UpdateCommentDTO,
+    @Query('comment', ParseIntPipe) id: number,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+      }),
+    )
+    data: UpdateCommentDto,
   ) {
     return this.CommentService.updateComment(id, data);
   }

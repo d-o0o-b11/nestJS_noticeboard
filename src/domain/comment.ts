@@ -18,8 +18,9 @@ export class commentEntity {
   content: string;
 
   @CreateDateColumn()
-  @Column('varchar')
-  date: string;
+  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+  //test
+  date: Date;
 
   @ManyToOne(() => NoticeBoardEntity, (c) => c.comment, {
     onDelete: 'CASCADE',

@@ -6,21 +6,53 @@ import { NoticeboardModule } from './noticeboard/noticeboard.module';
 import { NoticeBoardEntity } from './domain/noticeboard';
 import { CommentModule } from './comment/comment.module';
 import { commentEntity } from './domain/comment';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { WeatherModule } from './weather/weather.module';
+import databaseConfiguration from './config/postgresConfiguration';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'postgres-container',
-      port: 5432,
-      username: 'boardtestUSER',
-      password: '123456',
-      database: 'test',
-      entities: [NoticeBoardEntity, commentEntity],
-      synchronize: true,
+    // 서버가 켜지기전 언젠가 수행이 됩니다!
+    ConfigModule.forRoot({
+      envFilePath: 'src/envs/.env.development', // 폴더 루트 기준 절대 경로
+      load: [databaseConfiguration],
+    }),
+
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   host: process.env.DB_HOST,
+    //   port: Number(process.env.DB_PORT),
+    //   username: process.env.DB_USERNAME,
+    //   password: process.env.DB_PASSWORD,
+    //   database: process.env.DB_DATABASE,
+    //   entities: [NoticeBoardEntity, commentEntity],
+    //   synchronize: false,
+    // }),
+
+    // 동적 모듈 -> useFactory
+    /**
+     * static func = (option) =>  new ConfigModule(option);
+     * static me = new ConfigModule('tkd')
+     */
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      /**
+       * constructor(
+       *  @Inject() configService: ConfigService
+       * )
+       */
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          ...configService.get('postgres'),
+          entities: [NoticeBoardEntity, commentEntity],
+          synchronize: false,
+        };
+      },
     }),
     NoticeboardModule,
     CommentModule,
+    WeatherModule,
   ],
   controllers: [AppController],
   providers: [AppService],

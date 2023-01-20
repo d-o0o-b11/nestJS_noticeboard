@@ -8,7 +8,7 @@ import { TestRealEntity } from 'src/test.entity';
 import { Like, Repository } from 'typeorm';
 import { View } from 'typeorm/schema-builder/view/View';
 import { CreateNoticeDto } from './dtos/create-notice.dto';
-import { NoticeBoardDTO, UpdateNoticeBoardDTO } from './noticeboard.dto';
+import { UpdateBoardDTO } from './dtos/update-notice.dto';
 import { NoticeboardModule } from './noticeboard.module';
 // import { NoticeRepository } from './noticeboard.repository';
 
@@ -103,7 +103,7 @@ export class NoticeboardService {
     });
   }
 
-  async updateNotice(id: number, data: UpdateNoticeBoardDTO) {
+  async updateNotice(id: number, data: UpdateBoardDTO) {
     // const { title, content } = data;
     // creteria -> PK 인줄 알아요
 

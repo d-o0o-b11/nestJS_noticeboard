@@ -47,7 +47,7 @@ import { WeatherEntity } from './domain/weather';
         return {
           ...configService.get('postgres'),
           entities: [NoticeBoardEntity, commentEntity, WeatherEntity],
-          synchronize: false,
+          synchronize: true,
         };
       },
     }),

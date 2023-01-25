@@ -13,6 +13,7 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
+import { WeatherService } from 'src/weather/weather.service';
 import { UpdateDateColumn } from 'typeorm';
 import { CreateNoticeDto } from './dtos/create-notice.dto';
 import { UpdateBoardDTO } from './dtos/update-notice.dto';
@@ -21,8 +22,7 @@ import { NoticeboardService } from './noticeboard.service';
 @Controller('noticeboard')
 export class NoticeboardController {
   constructor(
-    @Inject('test')
-    private readonly NoticeboardService: NoticeboardService,
+    private readonly NoticeboardService: NoticeboardService, // private readonly WeatherService: WeatherService,
   ) {}
 
   // @Get()

@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
@@ -11,8 +12,12 @@ export class WeatherEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @CreateDateColumn()
+  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+  date: Date;
+
   @Column({ type: 'varchar', length: 20 })
-  test: string;
+  Temperatures: string;
 
   @OneToOne(() => NoticeBoardEntity)
   @JoinColumn({ name: 'board_id' })

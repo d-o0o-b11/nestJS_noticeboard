@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -6,8 +7,10 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { moveMessagePortToContext } from 'worker_threads';
 import { commentEntity } from './comment';
 import { WeatherEntity } from './weather';
+import moment from 'moment';
 
 @Entity('noticeboard')
 export class NoticeBoardEntity {
@@ -26,6 +29,7 @@ export class NoticeBoardEntity {
   //작성한 날짜
   @CreateDateColumn()
   @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+  //'CURRENT_TIMESTAMP'
   date: Date;
 
   //조회수
@@ -35,6 +39,6 @@ export class NoticeBoardEntity {
   @OneToMany(() => commentEntity, (n) => n.noticeBoard)
   comment: commentEntity[];
 
-  @OneToOne(() => WeatherEntity)
+  @OneToOne(() => WeatherEntity, (m) => m.noticeBoard)
   weather: WeatherEntity;
 }

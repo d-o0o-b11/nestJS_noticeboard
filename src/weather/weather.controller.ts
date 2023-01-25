@@ -26,9 +26,8 @@ export class WeatherController {
     const result =
       url +
       process.env.WEATHER_KEY +
-      '&pageNo=1&numOfRows=10&base_date=20230125&base_time=0600&nx=55&ny=127';
-    console.log('ddd:' + process.env.WEATHER_KEY);
+      '&pageNo=1&numOfRows=10&dataType=JSON&base_date=20230125&base_time=0600&nx=55&ny=127';
 
-    return this.weatherService.getWheather(result);
+    return this.weatherService.getWeather(result);
   }
 }

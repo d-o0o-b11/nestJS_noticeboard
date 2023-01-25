@@ -12,6 +12,8 @@ export class CreateNoticeDto {
   //   @IsIn(['a', 'b'])
   content: string;
 
+  date: Date;
+
   //   toEntity() {
   //     const entity = new NoticeBoardEntity();
   //     entity.title = this.title;

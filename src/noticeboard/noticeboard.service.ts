@@ -2,14 +2,19 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { networkInterfaces } from 'os';
 import { identity } from 'rxjs';
+import { DateUtil } from '../utils/date.util';
 import { commentEntity } from 'src/domain/comment';
 import { NoticeBoardEntity } from 'src/domain/noticeboard';
 import { TestRealEntity } from 'src/test.entity';
+import { WeatherService } from 'src/weather/weather.service';
 import { Like, Repository } from 'typeorm';
 import { View } from 'typeorm/schema-builder/view/View';
 import { CreateNoticeDto } from './dtos/create-notice.dto';
 import { UpdateBoardDTO } from './dtos/update-notice.dto';
 import { NoticeboardModule } from './noticeboard.module';
+import { WeatherEntity } from 'src/domain/weather';
+import { string } from 'joi';
+import { NoticeBoardDto } from './dtos/notice-board.dto';
 // import { NoticeRepository } from './noticeboard.repository';
 
 @Injectable()
@@ -21,6 +26,7 @@ export class NoticeboardService {
   constructor(
     @InjectRepository(NoticeBoardEntity)
     private repository: Repository<NoticeBoardEntity>,
+    private weatherService: WeatherService,
   ) {}
 
   /**
@@ -37,7 +43,25 @@ export class NoticeboardService {
     entity.content = data.content;
     // const entity = data.toEntity();
     // entity.date = data.date;
+    // console.log(
+    //   '111:' +
+    //     (await this.repository.save(entity)).date.toString().substring(1),
+    // );
 
+    const saveResult = await this.repository.save(entity);
+    const formatdate = DateUtil.dateForamtter(saveResult.date);
+
+    /**
+     * 1. date-fns, moment(사용 안함 - 업데이트 중지) 같은 라이브러리 사용 (가장 일반적인 방법)
+     *    moment(saveResult.date).format('yyyyMMDD'); -> 변환 완료
+     * 2. private 혹은 util 클래스에 static method 로 dateFormatter 를 만드시는거
+     */
+    // wed Jan 25 2023 06:01:21 GMT+0000 -> yyyyMMDD
+
+    const weatherdata = await this.weatherService.getWeather2(
+      saveResult.id,
+      formatdate,
+    );
     /**
      * 디비 작업이 오래 걸리는 이유
      * 1. database connection pool 을 연다
@@ -46,7 +70,12 @@ export class NoticeboardService {
      * 4. 연결 잘 되면 생성 요청 보낸다.
      */
 
-    return this.repository.save(entity);
+    return {
+      saveResult,
+      weatherdata,
+    };
+
+    // return this.repository.save(entity);
 
     // 1. 게시글 저장
     // this.create(...)
@@ -57,6 +86,10 @@ export class NoticeboardService {
     // return null;
   }
 
+  /**
+   * 게시글 목록 조회 API
+   * @returns NoticeBoardDto[]
+   */
   async findNotice() {
     //includeText: string
     // return null;
@@ -66,7 +99,9 @@ export class NoticeboardService {
     //   },
     // });
 
-    return this.repository.find({
+    // deleteNotice, deleteComment, createWeather -> NoticeEntity ?? NoticeEntity 수정되면
+
+    const selectNotice = await this.repository.find({
       order: {
         id: 'ASC', // noticeboard id
         comment: {
@@ -75,8 +110,27 @@ export class NoticeboardService {
       },
       relations: {
         comment: true,
+        weather: true,
       },
     });
+
+    // return selectNotice.weather?.Temperatures;
+
+    // const dto = NoticeBoardDto.from(selectNotice);
+
+    // return dto;
+
+    // controller - entity -> servcie - entity -> repository -> entity -> service - entity -> controller
+
+    return selectNotice.map((entity) => ({
+      id: entity.id,
+      title: entity.title,
+      content: entity.content,
+      date: entity.date,
+      view: entity.view,
+      comment: entity.comment,
+      temperature: entity?.weather?.Temperatures,
+    }));
   }
 
   async detailNotice(id) {
@@ -99,6 +153,7 @@ export class NoticeboardService {
       },
       relations: {
         comment: true,
+        weather: true,
       },
     });
   }

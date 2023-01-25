@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { CreateWeatherDto } from './dto/create-weather.dto';
 import { UpdateWeatherDto } from './dto/update-weather.dto';
@@ -7,28 +15,19 @@ import { UpdateWeatherDto } from './dto/update-weather.dto';
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
-  @Post()
-  create(@Body() createWeatherDto: CreateWeatherDto) {
-    return this.weatherService.create(createWeatherDto);
-  }
-
+  /**
+   * http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst + ? +ServiceKey = +&pageNo= +
+&numOfRows = + &base_date= + &base_time= + &nx= + &ny=
+   */
   @Get()
-  findAll() {
-    return this.weatherService.findAll();
-  }
+  findOne() {
+    const url =
+      'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?ServiceKey=';
+    const result =
+      url +
+      '%2B25l0HaCzpLFeunH2w0VWm0RL1qSW4srfPAE8qcxt7espQzK9dUvIwumIKEXGZU9v2lEOkiC5BZPHttwjdo1%2FA%3D%3D' +
+      '&pageNo=1&numOfRows=10&base_date=20230124&base_time=0600&nx=55&ny=127';
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.weatherService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWeatherDto: UpdateWeatherDto) {
-    return this.weatherService.update(+id, updateWeatherDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.weatherService.remove(+id);
+    return this.weatherService.getWheather(result);
   }
 }

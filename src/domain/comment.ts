@@ -1,4 +1,3 @@
-import { strictEqual } from 'assert';
 import {
   Column,
   CreateDateColumn,

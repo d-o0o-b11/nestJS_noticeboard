@@ -9,12 +9,13 @@ import { commentEntity } from './domain/comment';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WeatherModule } from './weather/weather.module';
 import databaseConfiguration from './config/postgresConfiguration';
+import { WeatherEntity } from './domain/weather';
 
 @Module({
   imports: [
     // 서버가 켜지기전 언젠가 수행이 됩니다!
     ConfigModule.forRoot({
-      envFilePath: 'src/envs/.env.development', // 폴더 루트 기준 절대 경로
+      envFilePath: ['src/envs/development.env', 'src/envs/weatherkey.env'], // 폴더 루트 기준 절대 경로
       load: [databaseConfiguration],
     }),
 
@@ -45,7 +46,7 @@ import databaseConfiguration from './config/postgresConfiguration';
       useFactory: async (configService: ConfigService) => {
         return {
           ...configService.get('postgres'),
-          entities: [NoticeBoardEntity, commentEntity],
+          entities: [NoticeBoardEntity, commentEntity, WeatherEntity],
           synchronize: false,
         };
       },

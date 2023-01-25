@@ -25,8 +25,9 @@ export class WeatherController {
       'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?ServiceKey=';
     const result =
       url +
-      '%2B25l0HaCzpLFeunH2w0VWm0RL1qSW4srfPAE8qcxt7espQzK9dUvIwumIKEXGZU9v2lEOkiC5BZPHttwjdo1%2FA%3D%3D' +
-      '&pageNo=1&numOfRows=10&base_date=20230124&base_time=0600&nx=55&ny=127';
+      process.env.WEATHER_KEY +
+      '&pageNo=1&numOfRows=10&base_date=20230125&base_time=0600&nx=55&ny=127';
+    console.log('ddd:' + process.env.WEATHER_KEY);
 
     return this.weatherService.getWheather(result);
   }

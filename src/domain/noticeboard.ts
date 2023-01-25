@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { commentEntity } from './comment';
+import { WeatherEntity } from './weather';
 
 @Entity('noticeboard')
 export class NoticeBoardEntity {
@@ -32,4 +34,7 @@ export class NoticeBoardEntity {
 
   @OneToMany(() => commentEntity, (n) => n.noticeBoard)
   comment: commentEntity[];
+
+  @OneToOne(() => WeatherEntity)
+  weather: WeatherEntity;
 }

@@ -15,6 +15,7 @@ import { NoticeboardModule } from './noticeboard.module';
 import { WeatherEntity } from 'src/domain/weather';
 import { string } from 'joi';
 import { NoticeBoardDto } from './dtos/notice-board.dto';
+import { CreateNoticeBoardDto } from './swaggerdtos/createnoticeboardto.dto';
 // import { NoticeRepository } from './noticeboard.repository';
 
 @Injectable()
@@ -34,7 +35,7 @@ export class NoticeboardService {
    * @param data NoticeBoardDTO
    * - data 를 받아서 Insert 쿼리를 실행해서 저장하자, 테이블에
    */
-  async createNotice(data: CreateNoticeDto) {
+  async createNotice(data: CreateNoticeDto): Promise<CreateNoticeBoardDto> {
     // 어떻게 해서 저장을하자.
     // repository 를 가져와서 save 를 호출하자.
     // return this.repository.save();
@@ -71,7 +72,7 @@ export class NoticeboardService {
      */
 
     return {
-      saveResult,
+      ...saveResult,
       weatherdata,
     };
 

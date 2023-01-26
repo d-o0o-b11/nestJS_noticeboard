@@ -1,11 +1,8 @@
-import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { WeatherEntity } from 'src/domain/weather';
 import { Repository } from 'typeorm';
-import { CreateWeatherDto } from './dto/create-weather.dto';
-import { UpdateWeatherDto } from './dto/update-weather.dto';
 
 @Injectable()
 export class WeatherService {

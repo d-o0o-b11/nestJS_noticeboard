@@ -21,7 +21,7 @@ export class WeatherService {
     return weather.data;
   }
 
-  async getWeather2(weahterId: number, date) {
+  async getWeather2(weahterId: number, date): Promise<string> {
     const url =
       'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?ServiceKey=';
     const result =

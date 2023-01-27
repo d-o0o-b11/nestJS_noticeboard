@@ -1,20 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { networkInterfaces } from 'os';
-import { identity } from 'rxjs';
 import { DateUtil } from '../utils/date.util';
-import { commentEntity } from 'src/domain/comment';
 import { NoticeBoardEntity } from 'src/domain/noticeboard';
-import { TestRealEntity } from 'src/test.entity';
 import { WeatherService } from 'src/weather/weather.service';
-import { Like, Repository } from 'typeorm';
-import { View } from 'typeorm/schema-builder/view/View';
+import { Repository } from 'typeorm';
 import { CreateNoticeDto } from './dtos/create-notice.dto';
 import { UpdateBoardDTO } from './dtos/update-notice.dto';
-import { NoticeboardModule } from './noticeboard.module';
-import { WeatherEntity } from 'src/domain/weather';
-import { string } from 'joi';
-import { NoticeBoardDto } from './dtos/notice-board.dto';
 import { CreateNoticeBoardDto } from './swaggerdtos/createnoticeboardto.dto';
 // import { NoticeRepository } from './noticeboard.repository';
 
@@ -40,16 +31,10 @@ export class NoticeboardService {
     // repository 를 가져와서 save 를 호출하자.
     // return this.repository.save();
     const entity: NoticeBoardEntity = new NoticeBoardEntity();
-    entity.title = data.title;
-    entity.content = data.content;
-    // const entity = data.toEntity();
-    // entity.date = data.date;
-    // console.log(
-    //   '111:' +
-    //     (await this.repository.save(entity)).date.toString().substring(1),
-    // );
+    entity.title = data.title; // 1.title -> une
+    entity.content = data.content; // 1.content  udne
 
-    const saveResult = await this.repository.save(entity);
+    const saveResult = await this.repository.save(entity); // {title: unde, content: unde}
     const formatdate = DateUtil.dateForamtter(saveResult.date);
 
     /**
@@ -59,10 +44,16 @@ export class NoticeboardService {
      */
     // wed Jan 25 2023 06:01:21 GMT+0000 -> yyyyMMDD
 
+    /**
+     * saveResult.id = 11111.
+     * saveReulst.date = new Date(Date.now())
+     */
+
     const weatherdata = await this.weatherService.getWeather2(
       saveResult.id,
       formatdate,
     );
+
     /**
      * 디비 작업이 오래 걸리는 이유
      * 1. database connection pool 을 연다
@@ -146,7 +137,9 @@ export class NoticeboardService {
     // });
     // await this.updateNotice(id, { view: noticeEntity.view + 1 });
 
-    await this.repository.update(id, { view: () => 'view + 1' });
+    await this.repository.update(id, {
+      view: () => 'view + 1',
+    });
 
     return this.repository.findOne({
       where: {
@@ -173,10 +166,12 @@ export class NoticeboardService {
      * {title, content}
      */
 
-    return this.repository.update(id, {
+    const updateResult = await this.repository.update(id, {
       ...data,
       date: new Date(Date.now()),
     });
+
+    return updateResult;
   }
 
   async deleteNotice(id: number) {
@@ -189,8 +184,11 @@ export class NoticeboardService {
 
     // // 없으면 Error 반환
     if (!entity) {
-      throw Error('not foudn');
+      throw Error('not found');
     }
+
+    // 중요하다
+
     /**
      * DELETE FROM notcieboard where id = ?
      */

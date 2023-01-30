@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import Joi from 'joi';
+import * as Joi from 'joi';
 import { IsWeatherKey } from './weatherKey.config.interface';
 
 export default registerAs('weatherKey', () => {
@@ -11,8 +11,13 @@ export default registerAs('weatherKey', () => {
     key: process.env.WEATHER_KEY,
   };
 
-  const { error } = schema.validate(config, {
+  const { error, value } = schema.validate(config, {
     abortEarly: false,
   });
-  return config;
+
+  if (error) {
+    throw new Error(JSON.stringify(error));
+  }
+
+  return value;
 });

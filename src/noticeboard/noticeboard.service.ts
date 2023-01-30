@@ -49,6 +49,8 @@ export class NoticeboardService {
      * saveReulst.date = new Date(Date.now())
      */
 
+    // const weatherService = new WeatherService(weatherRepository, httpService, we);
+
     const weatherdata = await this.weatherService.getWeather2(
       saveResult.id,
       formatdate,

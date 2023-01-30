@@ -18,6 +18,7 @@ import weatherKeyConfig from './config/weatherKeyConfig';
     ConfigModule.forRoot({
       envFilePath: ['src/envs/development.env', 'src/envs/weatherkey.env'], // 폴더 루트 기준 절대 경로
       load: [databaseConfiguration, weatherKeyConfig],
+      isGlobal: true,
     }),
 
     // TypeOrmModule.forRoot({

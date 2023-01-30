@@ -13,10 +13,11 @@ import configuration from '../config/weatherKeyConfig';
 export class WeatherService {
   constructor(
     @InjectRepository(WeatherEntity)
-    @Inject(weatherKeyConfig.KEY)
     private repository: Repository<WeatherEntity>,
     private httpService: HttpService,
-    private weatherKey: ConfigType<typeof weatherKeyConfig>,
+
+    @Inject(weatherKeyConfig.KEY)
+    private weatherConfig: ConfigType<typeof weatherKeyConfig>,
   ) {}
 
   findAll() {
@@ -36,7 +37,7 @@ export class WeatherService {
       'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?ServiceKey=';
     const result =
       url +
-      process.env.WEATHER_KEY +
+      this.weatherConfig.key +
       `&pageNo=1&numOfRows=10&dataType=JSON&base_date=${date}&base_time=0600&nx=55&ny=127`;
 
     const weather = (

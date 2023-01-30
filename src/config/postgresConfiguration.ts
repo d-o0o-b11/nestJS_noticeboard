@@ -22,7 +22,7 @@ import { IsDatabaseConfig } from './postgres.config.interface';
 
 export default registerAs('postgres', () => {
   const schema = Joi.object<IsDatabaseConfig, true>({
-    // type: Joi.strig().required(),
+    type: Joi.string().required(),
     host: Joi.string().required(),
     port: Joi.number().required(),
     username: Joi.string().required(),
@@ -45,7 +45,9 @@ export default registerAs('postgres', () => {
     // false : 모든 오류 반환
   });
 
-  console.log('error: ' + error);
+  if (error) {
+    throw new Error(JSON.stringify(error));
+  }
 
   return config;
 });

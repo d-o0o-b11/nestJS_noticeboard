@@ -1,7 +1,7 @@
 import { DatabaseType } from 'typeorm';
 
 export interface IsDatabaseConfig {
-  //   type: DatabaseType;
+  type: DatabaseType;
   host: string;
   port: number;
   username: string;

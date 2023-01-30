@@ -13,12 +13,8 @@ import { NoticeboardService } from './noticeboard.service';
    * 기능 모듈에서는 반드시 관련된 엔터티만 forFeature 로 가져와야한다.
    */
   // imports: [TypeOrmModule.forFeature([NoticeBoardEntity, WeatherEntity])],
-  imports: [
-    WeatherModule,
-    TypeOrmModule.forFeature([WeatherEntity, NoticeBoardEntity]),
-    HttpModule,
-  ],
+  imports: [WeatherModule, TypeOrmModule.forFeature([NoticeBoardEntity])],
   controllers: [NoticeboardController],
-  providers: [NoticeboardService, WeatherService],
+  providers: [NoticeboardService],
 })
 export class NoticeboardModule {}

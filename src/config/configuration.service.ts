@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { IsWeatherKey } from './weatherKey.config.interface';
 import configuration from './weatherKeyConfig';
@@ -10,7 +10,7 @@ export class WeatherConfig implements IsWeatherKey {
     private configService: ConfigType<typeof configuration>,
   ) {}
 
-  get weatherkey(): string {
+  get key(): string {
     const value = this.configService.key;
     return value;
   }

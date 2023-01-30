@@ -10,13 +10,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WeatherModule } from './weather/weather.module';
 import databaseConfiguration from './config/postgresConfiguration';
 import { WeatherEntity } from './domain/weather';
+import weatherKeyConfig from './config/weatherKeyConfig';
 
 @Module({
   imports: [
     // 서버가 켜지기전 언젠가 수행이 됩니다!
     ConfigModule.forRoot({
       envFilePath: ['src/envs/development.env', 'src/envs/weatherkey.env'], // 폴더 루트 기준 절대 경로
-      load: [databaseConfiguration],
+      load: [databaseConfiguration, weatherKeyConfig],
     }),
 
     // TypeOrmModule.forRoot({
@@ -36,7 +37,11 @@ import { WeatherEntity } from './domain/weather';
      * static me = new ConfigModule('tkd')
      */
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [
+        ConfigModule.forRoot({
+          load: [weatherKeyConfig],
+        }),
+      ],
       /**
        * constructor(
        *  @Inject() configService: ConfigService

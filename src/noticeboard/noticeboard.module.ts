@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NoticeBoardEntity } from 'src/domain/noticeboard';
@@ -15,6 +16,7 @@ import { NoticeboardService } from './noticeboard.service';
   imports: [
     WeatherModule,
     TypeOrmModule.forFeature([WeatherEntity, NoticeBoardEntity]),
+    HttpModule,
   ],
   controllers: [NoticeboardController],
   providers: [NoticeboardService, WeatherService],

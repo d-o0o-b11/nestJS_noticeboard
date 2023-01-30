@@ -1,8 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { any } from 'joi';
-import { resolve } from 'path';
 import { WeatherEntity } from 'src/domain/weather';
 import { Repository } from 'typeorm';
 import { WeatherService } from './weather.service';
@@ -40,6 +38,7 @@ describe('WeatherService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(httpService).toBeDefined();
   });
 
   describe('날씨 api axios', () => {
@@ -142,7 +141,7 @@ describe('WeatherService', () => {
 
       const get = jest
         .spyOn(httpService, 'get')
-        .mockImplementation(result, dummy);
+        .mockImplementationOnce(() => of(result));
 
       await service.getWeather2(weatherId, date);
 

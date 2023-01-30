@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { CreateNoticeDto } from './dtos/create-notice.dto';
 import { UpdateBoardDTO } from './dtos/update-notice.dto';
 import { NoticeboardService } from './noticeboard.service';
-import { CreateNoticeBoardDto } from './swaggerdtos/createnoticeboardto.dto';
 
 describe('NoticeboardService', () => {
   let service: NoticeboardService;

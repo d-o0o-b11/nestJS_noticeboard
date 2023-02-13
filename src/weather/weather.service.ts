@@ -26,13 +26,11 @@ export class WeatherService {
 
   async getWeather(result) {
     const weather = await axios.get(result);
-
     return weather.data;
   }
 
   async getWeather2(weahterId: number, date): Promise<string> {
     // 1) 여기 process.env -> 공공 API env 용 configuration + ConfigService 로 대체하기
-
     const url =
       'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?ServiceKey=';
     const result =

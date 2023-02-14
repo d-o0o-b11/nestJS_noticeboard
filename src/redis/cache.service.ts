@@ -14,4 +14,13 @@ export class CacheDBService {
     const rtn = (await this.cacheManager.get(key)) as string;
     return rtn;
   }
+
+  async reset() {
+    await this.cacheManager.reset();
+  }
+
+  async del(key: string) {
+    await this.cacheManager.del(key);
+    console.log('111' + key);
+  }
 }

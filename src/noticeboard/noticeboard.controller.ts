@@ -1,12 +1,16 @@
 import {
   Body,
+  CacheInterceptor,
+  CACHE_MANAGER,
   Controller,
   Delete,
   Get,
+  Inject,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -22,8 +26,12 @@ import { CreateNoticeDto } from './dtos/create-notice.dto';
 import { UpdateBoardDTO } from './dtos/update-notice.dto';
 import { NoticeboardService } from './noticeboard.service';
 import { GetNoticeRes } from './swaggerdtos/getnoticeres.dto';
+import { HttpCacheInterceptor } from 'src/core/httpcache.interceptor';
+import { CacheEvict } from 'src/core/cache-evict.decorator';
+import { Cache } from 'cache-manager';
 
 @Controller('noticeboard')
+@UseInterceptors(HttpCacheInterceptor)
 @ApiTags('noticeboard API')
 export class NoticeboardController {
   constructor(
@@ -74,12 +82,14 @@ export class NoticeboardController {
     description: '게시글 출력 성공',
     type: GetNoticeRes,
   })
+  @CacheEvict('/find')
   @Get('find')
   /**
    * 게시글 출력 요청입니다.
    * 조건없이 모든 게시글 출력하기
    */
   async findBoard() {
+    console.log('12');
     return this.NoticeboardService.findNotice();
   }
 
@@ -92,8 +102,8 @@ export class NoticeboardController {
     type: GetNoticeRes,
   })
   @Get()
+  //async detailBoard(@Query('board', ParseIntPipe) id: number)
   async detailBoard(@Query('board', ParseIntPipe) id: number) {
-    console.log(id);
     return this.NoticeboardService.detailNotice(id);
   }
 

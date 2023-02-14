@@ -36,6 +36,20 @@ services:
     networks:
       - test-networks
 
+  dev_redis:
+    container_name: redis
+    image: redis:latest
+    hostname: localhost
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/acl/users.acl:/etc/redis/users.acl
+    networks:
+      - test-networks
+
 networks:
   # 요기도
   test-networks:

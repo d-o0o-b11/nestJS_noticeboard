@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,6 +11,7 @@ import { WeatherModule } from './weather/weather.module';
 import databaseConfiguration from './config/postgresConfiguration';
 import { WeatherEntity } from './domain/weather';
 import weatherKeyConfig from './config/weatherKeyConfig';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -60,6 +61,14 @@ import weatherKeyConfig from './config/weatherKeyConfig';
     NoticeboardModule,
     CommentModule,
     WeatherModule,
+    CacheModule.register({
+      useFactory: async () => ({
+        isGlobal: true,
+        store: redisStore,
+        node: [{ host: process.env.RESID_HOST, port: process.env.REDIS_PORT }],
+        options: { ttl: 0 },
+      }),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

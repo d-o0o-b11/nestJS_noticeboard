@@ -20,17 +20,29 @@ import { CacheDBService } from './cache.service';
 // })
 // export class CacheDBModule {}
 
-const cacheModule = CacheModule.register({
-  useFactory: async () => ({
-    store: redisStore,
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    ttl: 0,
-  }),
-});
+// const cacheModule = CacheModule.register({
+//   useFactory: async () => ({
+//     store: redisStore,
+//     host: process.env.REDIS_HOST,
+//     port: process.env.REDIS_PORT,
+//     ttl: 0,
+//   }),
+// });
 
 @Module({
-  imports: [cacheModule],
-  exports: [cacheModule],
+  imports: [
+    CacheModule.register({
+      useFactory: async () => ({
+        isGlobal: true,
+        store: redisStore,
+        node: [{ host: process.env.RESID_HOST, port: process.env.REDIS_PORT }],
+        options: { ttl: 10 },
+      }),
+    }),
+  ],
+  // exports: [cacheModule],
+  controllers: [],
+  providers: [CacheDBService],
+  exports: [CacheDBService],
 })
 export class RedisCacheModule {}

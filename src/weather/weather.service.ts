@@ -42,8 +42,6 @@ export class WeatherService {
       await firstValueFrom<{ data }>(this.httpService.get(result))
     ).data;
 
-    console.log('키값 확인: ');
-
     // const weatherResultObservable = this.httpService.get(result).t;
 
     // return weatherResultObservable.pipe(take(1)).subscribe({

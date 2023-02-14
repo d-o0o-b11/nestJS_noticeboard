@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DateUtil } from '../utils/date.util';
 import { NoticeBoardEntity } from 'src/domain/noticeboard';
@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { CreateNoticeDto } from './dtos/create-notice.dto';
 import { UpdateBoardDTO } from './dtos/update-notice.dto';
 import { CreateNoticeBoardDto } from './swaggerdtos/createnoticeboardto.dto';
+import { CacheDBService } from 'src/redis/cache.service';
+import { Cache } from 'cache-manager';
 // import { NoticeRepository } from './noticeboard.repository';
 
 @Injectable()
@@ -19,6 +21,7 @@ export class NoticeboardService {
     @InjectRepository(NoticeBoardEntity)
     private repository: Repository<NoticeBoardEntity>,
     private weatherService: WeatherService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   /**
@@ -37,6 +40,8 @@ export class NoticeboardService {
     const saveResult = await this.repository.save(entity); // {title: unde, content: unde}
     const formatdate = DateUtil.dateForamtter(saveResult.date);
 
+    //await this.cacheManager.del('noticeboard');
+
     /**
      * 1. date-fns, moment(사용 안함 - 업데이트 중지) 같은 라이브러리 사용 (가장 일반적인 방법)
      *    moment(saveResult.date).format('yyyyMMDD'); -> 변환 완료
@@ -49,6 +54,8 @@ export class NoticeboardService {
      * saveReulst.date = new Date(Date.now())
      */
 
+    //await this.cacheManager.set(this.createNotice.name, saveResult, 60 * 60);
+    //const valueRe = await this.cacheManager.get(this.createNotice.name);
     // const weatherService = new WeatherService(weatherRepository, httpService, we);
 
     const weatherdata = await this.weatherService.getWeather2(
@@ -63,6 +70,7 @@ export class NoticeboardService {
      * 3. 없으면 데이터베이스랑 TCP/IP 통신해서 커넥션 만든다
      * 4. 연결 잘 되면 생성 요청 보낸다.
      */
+    //console.log('sdfdsf', valueRe);
 
     return {
       ...saveResult,
@@ -108,6 +116,8 @@ export class NoticeboardService {
       },
     });
 
+    // setTimeout -> 1000 ms (평균) 100 ~ 200
+
     // return selectNotice.weather?.Temperatures;
 
     // const dto = NoticeBoardDto.from(selectNotice);
@@ -138,20 +148,57 @@ export class NoticeboardService {
     //   },
     // });
     // await this.updateNotice(id, { view: noticeEntity.view + 1 });
+    const value = await this.cacheManager.get<string>(`/noticeboard/${id}`);
+
+    if (value) {
+      console.log('caching');
+      return JSON.parse(value);
+    }
 
     await this.repository.update(id, {
       view: () => 'view + 1',
     });
 
-    return this.repository.findOne({
-      where: {
-        id: id,
-      },
-      relations: {
-        comment: true,
-        weather: true,
-      },
-    });
+    // console.log(value);
+
+    if (!value) {
+      const result = await this.repository.findOne({
+        where: {
+          id: id,
+        },
+        relations: {
+          comment: true,
+          weather: true,
+        },
+      });
+      // console.log(result);
+
+      //		set('cache 키', 'cache 값', 만료시간(sec))
+      console.log('db');
+
+      await this.cacheManager.set(
+        `/noticeboard/${id}`,
+        JSON.stringify(result),
+        60 * 60,
+      );
+      // console.log('test', await this.cacheManager.get(id + ''));
+
+      return result;
+    }
+
+    // await this.repository.update(id, {
+    //   view: () => 'view + 1',
+    // });
+
+    // return this.repository.findOne({
+    //   where: {
+    //     id: id,
+    //   },
+    //   relations: {
+    //     comment: true,
+    //     weather: true,
+    //   },
+    // });
   }
 
   async updateNotice(id: number, data: UpdateBoardDTO) {
@@ -167,6 +214,8 @@ export class NoticeboardService {
     /**
      * {title, content}
      */
+    const value = await this.cacheManager.get(`/noticeboard/${id}`);
+    console.log('12321ed' + value);
 
     const updateResult = await this.repository.update(id, {
       ...data,

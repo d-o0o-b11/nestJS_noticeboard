@@ -21,7 +21,7 @@ export class NoticeboardService {
     @InjectRepository(NoticeBoardEntity)
     private repository: Repository<NoticeBoardEntity>,
     private weatherService: WeatherService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache, // private cacheManager2: CacheDBService,
   ) {}
 
   /**
@@ -40,8 +40,12 @@ export class NoticeboardService {
     const saveResult = await this.repository.save(entity); // {title: unde, content: unde}
     const formatdate = DateUtil.dateForamtter(saveResult.date);
 
-    //await this.cacheManager.del('noticeboard');
-
+    // await this.cacheManager2.del('dsf');
+    // await this.cacheManager2.setKey(
+    //   '/noticeboard/create',
+    //   JSON.stringify(saveResult),
+    // );
+    console.log('몇번');
     /**
      * 1. date-fns, moment(사용 안함 - 업데이트 중지) 같은 라이브러리 사용 (가장 일반적인 방법)
      *    moment(saveResult.date).format('yyyyMMDD'); -> 변환 완료

@@ -8,6 +8,8 @@ import { WeatherService } from 'src/weather/weather.service';
 import { NoticeboardController } from './noticeboard.controller';
 import { NoticeboardService } from './noticeboard.service';
 import * as redisStore from 'cache-manager-redis-store';
+import { RedisCacheModule } from 'src/redis/cache.module';
+import type { RedisClientOptions } from 'redis';
 
 @Module({
   /**
@@ -17,13 +19,28 @@ import * as redisStore from 'cache-manager-redis-store';
   imports: [
     WeatherModule,
     TypeOrmModule.forFeature([NoticeBoardEntity]),
-    CacheModule.register({
-      useFactory: async () => ({
-        isGlobal: true,
-        store: redisStore,
-        node: [{ host: process.env.RESID_HOST, port: process.env.REDIS_PORT }],
-        options: { ttl: 0 },
-      }),
+    // RedisCacheModule,
+    // CacheModule.register({
+    //   useFactory: async () => ({
+    //     isGlobal: true,
+    //     store: redisStore,
+    //     node: [{ host: 'dev_redis', port: 6379 }],
+    //     options: { ttl: 0 },
+    //   }),
+    // }),
+    CacheModule.register<RedisClientOptions>({
+      // isGlobal: true,
+      store: redisStore,
+      // node: [{ host: 'dev_redis', port: 6379 }],
+      // options: { ttl: 0 },
+      host: 'dev_redis',
+      port: 6379,
+      // useFactory: async () => ({
+      //   isGlobal: true,
+      //   store: redisStore,
+      //   node: [{ host: 'dev_redis', port: 6379 }],
+      //   options: { ttl: 0 },
+      // }),
     }),
   ],
   controllers: [NoticeboardController],

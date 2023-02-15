@@ -33,7 +33,7 @@ import { CacheDBService } from './cache.service';
   imports: [
     CacheModule.register({
       useFactory: async () => ({
-        isGlobal: true,
+        isGlobal: false,
         store: redisStore,
         node: [{ host: process.env.RESID_HOST, port: process.env.REDIS_PORT }],
         options: { ttl: 10 },

@@ -61,14 +61,6 @@ import * as redisStore from 'cache-manager-redis-store';
     NoticeboardModule,
     CommentModule,
     WeatherModule,
-    CacheModule.register({
-      useFactory: async () => ({
-        isGlobal: true,
-        store: redisStore,
-        node: [{ host: process.env.RESID_HOST, port: process.env.REDIS_PORT }],
-        options: { ttl: 0 },
-      }),
-    }),
   ],
   controllers: [AppController],
   providers: [AppService],

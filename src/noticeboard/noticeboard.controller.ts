@@ -33,6 +33,7 @@ import { Cache } from 'cache-manager';
 @Controller('noticeboard')
 @UseInterceptors(HttpCacheInterceptor)
 @ApiTags('noticeboard API')
+@CacheEvict('noticeboard')
 export class NoticeboardController {
   constructor(
     private readonly NoticeboardService: NoticeboardService, // private readonly WeatherService: WeatherService,
@@ -54,6 +55,7 @@ export class NoticeboardController {
     description: '게시글 생성 성공',
     type: CreateNoticeRes,
   })
+  @CacheEvict('.')
   @Post()
   /**
    * 게시글 생성 요청입니다.
@@ -102,6 +104,7 @@ export class NoticeboardController {
     type: GetNoticeRes,
   })
   @Get()
+  @CacheEvict('detailBoard')
   //async detailBoard(@Query('board', ParseIntPipe) id: number)
   async detailBoard(@Query('board', ParseIntPipe) id: number) {
     return this.NoticeboardService.detailNotice(id);
@@ -116,6 +119,7 @@ export class NoticeboardController {
     description: '삭제할 게시글 번호',
     example: 1,
   })
+  @CacheEvict('.')
   @Delete()
   /**
    * 게시글 삭제 요청입니다.

@@ -40,28 +40,6 @@ export class NoticeboardService {
     const saveResult = await this.repository.save(entity); // {title: unde, content: unde}
     const formatdate = DateUtil.dateForamtter(saveResult.date);
 
-    // await this.cacheManager2.del('dsf');
-    // await this.cacheManager2.setKey(
-    //   '/noticeboard/create',
-    //   JSON.stringify(saveResult),
-    // );
-    console.log('몇번');
-    /**
-     * 1. date-fns, moment(사용 안함 - 업데이트 중지) 같은 라이브러리 사용 (가장 일반적인 방법)
-     *    moment(saveResult.date).format('yyyyMMDD'); -> 변환 완료
-     * 2. private 혹은 util 클래스에 static method 로 dateFormatter 를 만드시는거
-     */
-    // wed Jan 25 2023 06:01:21 GMT+0000 -> yyyyMMDD
-
-    /**
-     * saveResult.id = 11111.
-     * saveReulst.date = new Date(Date.now())
-     */
-
-    //await this.cacheManager.set(this.createNotice.name, saveResult, 60 * 60);
-    //const valueRe = await this.cacheManager.get(this.createNotice.name);
-    // const weatherService = new WeatherService(weatherRepository, httpService, we);
-
     const weatherdata = await this.weatherService.getWeather2(
       saveResult.id,
       formatdate,
@@ -74,7 +52,6 @@ export class NoticeboardService {
      * 3. 없으면 데이터베이스랑 TCP/IP 통신해서 커넥션 만든다
      * 4. 연결 잘 되면 생성 요청 보낸다.
      */
-    //console.log('sdfdsf', valueRe);
 
     return {
       ...saveResult,
@@ -97,16 +74,6 @@ export class NoticeboardService {
    * @returns NoticeBoardDto[]
    */
   async findNotice() {
-    //includeText: string
-    // return null;
-    // return this.repository.find({
-    //   where: {
-    //     title: Like(includeText),
-    //   },
-    // });
-
-    // deleteNotice, deleteComment, createWeather -> NoticeEntity ?? NoticeEntity 수정되면
-
     const selectNotice = await this.repository.find({
       order: {
         id: 'ASC', // noticeboard id
@@ -142,18 +109,8 @@ export class NoticeboardService {
   }
 
   async detailNotice(id) {
-    // findOne => entity찾ㄷ기
-    // const noticeEntity = await this.repository.findOne({
-    //   where: {
-    //     id: id,
-    //   },
-    //   relations: {
-    //     comment: true,
-    //   },
-    // });
-    // await this.updateNotice(id, { view: noticeEntity.view + 1 });
     const value = await this.cacheManager.get<string>(`/noticeboard/${id}`);
-
+    console.log('value', value);
     if (value) {
       console.log('caching');
       return JSON.parse(value);
@@ -219,7 +176,6 @@ export class NoticeboardService {
      * {title, content}
      */
     const value = await this.cacheManager.get(`/noticeboard/${id}`);
-    console.log('12321ed' + value);
 
     const updateResult = await this.repository.update(id, {
       ...data,

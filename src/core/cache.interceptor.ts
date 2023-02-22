@@ -1,26 +1,33 @@
 import {
   CacheInterceptor,
+  CACHE_MANAGER,
   CallHandler,
   ExecutionContext,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Cache } from 'cache-manager';
 import { Request } from 'express';
+import { Cluster } from 'ioredis';
 import { map, Observable, tap } from 'rxjs';
+import { CacheDBService } from 'src/redis/cache.service';
 import { CACHE_EVICT_METADATA } from './cache.constants';
 
 @Injectable()
-export class HttpCacheInterceptor extends CacheInterceptor {
+export class HttpCacheInterceptor22 extends CacheInterceptor {
   private readonly CACHE_EVICT_METHODS = ['POST', 'PATCH', 'PUT', 'DELETE'];
+  private readonly CACHE_SET_METHODS = ['POST', 'PATCH', 'PUT'];
 
   async intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest<Request>();
+    // console.log(context);
+    // console.log(this.cacheManager);
 
-    console.log(await this.cacheManager.store.keys());
+    // this.cacheManager <-- (CACHE_MANAGER) -- CacheModule.register()
 
     // 상태 변환 메서드일떄
     const reflector: Reflector = this.reflector;
@@ -30,41 +37,72 @@ export class HttpCacheInterceptor extends CacheInterceptor {
     ]);
 
     if (this.CACHE_EVICT_METHODS.includes(req.method)) {
-      //POST, PATCH, PUT, DELETE
-      //await (this.cacheManager as Cache).del(evictKeys.join(''));
-      // console.log('post들어옴');
+      await (this.cacheManager as Cache).del(evictKeys.join(''));
+
       return next.handle().pipe(
         tap((data) => {
-          console.log('dsfsdf', evictKeys.join(''));
           (this.cacheManager as Cache).set(
             evictKeys.join(''),
             JSON.stringify(data),
             600 * 600,
           );
+          console.log(
+            'DataGEt',
+            (this.cacheManager as Cache).get(evictKeys.join('')),
+          );
+        }),
+      );
+
+      return next.handle().pipe(
+        map((data) => {
+          if (
+            this.CACHE_SET_METHODS.includes(req.method) &&
+            !(this.cacheManager as Cache).get<string>(evictKeys.join(''))
+          ) {
+            (this.cacheManager as Cache).set(evictKeys.join(''), data, 60 * 60);
+            console.log('ㄸㄸㄸㄸㄸㄸㄸ');
+          }
+          return data;
         }),
       );
     } else {
-      //GET
       const value = await (this.cacheManager as Cache).get<string>(
         evictKeys.join(''),
       );
 
-      // console.log('method', req.method, value, evictKeys.join(''));
+      console.log('method', req.method, value, evictKeys.join(''));
 
       if (value) {
-        return super.intercept(context, next);
+        return JSON.parse(value);
       } else {
-        console.log('execute');
-        return next.handle().pipe(
-          tap((data) => {
-            (this.cacheManager as Cache).set(
-              evictKeys.join(''),
-              JSON.stringify(data),
-              600 * 600,
-            );
+        // await (this.cacheManager as Cache).set(
+        //   evictKeys.join(''),
+        //   next.handle().pipe(
+        //     map((data) => {
+        //       JSON.stringify(data);
+        //       console.log('data', data);
+        //     }),
+        //   ),
+        //   60 * 60,
+        // );
+
+        next.handle().pipe(
+          map((data) => {
+            console.log('mapData', data);
+            (this.cacheManager as Cache).set(evictKeys.join(''), data, 60 * 60);
           }),
         );
       }
+
+      console.log(
+        'test22222',
+        await (this.cacheManager as Cache).get(evictKeys.join('')),
+      );
+
+      // 원하는 키값? evictKeys
+
+      // 기존 캐싱 처리
+      return super.intercept(context, next);
     }
   }
 

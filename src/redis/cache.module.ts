@@ -1,6 +1,7 @@
 import { CacheModule, Global, Module } from '@nestjs/common';
 import * as redisStore from 'cache-manager-redis-store';
 import { CacheDBService } from './cache.service';
+import * as redisCacheStore from 'cache-manager-ioredis';
 
 // export const cacheModule = CacheModule.registerAsync({
 //   useFactory: async () => ({
@@ -34,7 +35,7 @@ import { CacheDBService } from './cache.service';
     CacheModule.register({
       useFactory: async () => ({
         isGlobal: false,
-        store: redisStore,
+        store: redisCacheStore,
         node: [{ host: process.env.RESID_HOST, port: process.env.REDIS_PORT }],
         options: { ttl: 10 },
       }),

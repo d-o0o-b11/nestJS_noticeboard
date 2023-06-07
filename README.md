@@ -22,3 +22,6 @@
 - 게시글 쓸 당시의 날씨 온도(날씨 공공api) 저장
 - cache 
 
+## DB 설계도
+
+<img width="518" alt="게시판" src="https://github.com/d-o0o-b11/nestJS_noticeboard/assets/97296843/a8c530f9-dbfa-46d3-9d96-f90932611de9">
